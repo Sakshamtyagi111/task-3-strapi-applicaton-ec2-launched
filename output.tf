@@ -35,3 +35,7 @@ output "security_group_id" {
   description = "The ID of the Security Group"
   value       = aws_security_group.allow_web.id
 }
+output "strapi_url" {
+  # Format: aws_instance.<INTERNAL_NAME>.public_ip
+  value = "http://${aws_instance.web_server.public_ip}:1337/admin"
+}

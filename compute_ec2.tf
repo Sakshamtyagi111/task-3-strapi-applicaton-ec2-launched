@@ -25,12 +25,12 @@ data "aws_ami" "ubuntu_ohio" {
 
 resource "aws_instance" "web_server" {
   ami           = data.aws_ami.ubuntu.id 
-  instance_type = "t3.micro"
+  instance_type = "t3.small"
   
   subnet_id                   = aws_subnet.public-subnet.id
   vpc_security_group_ids      = [aws_security_group.allow_web.id]
   associate_public_ip_address = true 
-  key_name                    = aws_key_pair.saksham-ec2-key.key_name
+  key_name                    = aws_key_pair.deployer.key_name
 
   root_block_device {
     volume_size = 10
@@ -47,12 +47,39 @@ resource "aws_instance" "web_server" {
   }
 
   user_data = <<-EOF
-              #!/bin/bash
-              apt-get update -y
-              apt-get install -y apache2
-              systemctl start apache2
-              systemctl enable apache2
-              echo "<h1>Hello from Terraform! Deployed by Saksham tyagi.</h1>" > /var/www/html/index.html
+             #!/bin/bash
+    
+    # 1. Update and Install Dependencies
+    apt-get update -y
+    apt-get upgrade -y
+    apt-get install -y git build-essential
+
+    # 2. Install Node.js 20 (LTS) 
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    apt-get install -y nodejs
+
+    # 3. Install PM2 (Process Manager) globally
+    npm install pm2 -g
+
+    # 4. Switch to 'ubuntu' user to create the project 
+    # (We don't want to own files as root)
+    su - ubuntu -c '
+      cd /home/ubuntu
+      
+      # Create Strapi project with SQLite (Quickstart)
+      # --no-run: Don't start it yet, we want to use PM2
+      npx create-strapi-app@latest my-strapi-project --quickstart --no-run
+
+      # Build the Admin UI
+      cd my-strapi-project
+      npm run build
+
+      # Start Strapi with PM2 in the background
+      pm2 start npm --name "strapi" -- run start
+      
+      # Save PM2 list so it restarts on reboot
+      pm2 save
+    '
               EOF
 
   tags = {

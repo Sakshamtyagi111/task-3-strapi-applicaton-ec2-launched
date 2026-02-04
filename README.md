@@ -1,61 +1,37 @@
-# 🚀 Getting started with Strapi
+Video Demonstration: I have recorded a dedicated video with audio explanation demonstrating the full process, including the creation of AWS resources and the live startup of the Strapi application. Watch here: https://www.loom.com/share/1fbf201247884a0b81fd671e19cbd0fd
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
+1. Terraform Infrastructure & Automation
 
-### `develop`
+Full Provisioning: Wrote custom Terraform code to provision the entire AWS environment, including the VPC, Subnets, and Internet Gateway.
 
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
+Security Groups: Manually configured Security Groups to allow traffic on ports 22 (SSH), 80 (HTTP), and 1337 (Strapi).
 
-```
-npm run develop
-# or
-yarn develop
-```
+SSH Key Automation: Used the tls_private_key resource to automatically generate an SSH key pair and save the .pem file locally for secure access.
 
-### `start`
+2. Strapi Installation & Deployment
 
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
+Installation: Followed official documentation to install Node.js and Strapi on the Ubuntu EC2 instance.
 
-```
-npm run start
-# or
-yarn start
-```
+Commands Used:
 
-### `build`
+Created the app: npx create-strapi-app@latest my-strapi-project
 
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
+Built the admin panel: npm run build
 
-```
-npm run build
-# or
-yarn build
-```
+Started the server (Production): pm2 start npm --name "strapi" -- run start
 
-## ⚙️ Deployment
+3. Version Control (GitHub)
 
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
+Repository Management: Initialized Git inside the EC2 instance and handled .gitignore to exclude heavy node_modules.
 
-```
-yarn strapi deploy
-```
+Authentication: Solved authentication challenges using Personal Access Tokens (PAT).
 
-## 📚 Learn more
+Commands Used:
 
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
+git remote add origin <repo_url>
 
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
+git push -u origin main --force
 
-## ✨ Community
+4. Successful Deployment
 
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
-
----
-
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+Live Proof: The video confirms that all resources were successfully created and the Strapi application is running and accessible via the EC2 public IP.
